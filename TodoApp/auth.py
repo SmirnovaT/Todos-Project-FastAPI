@@ -72,11 +72,11 @@ def create_access_token(username: str, user_id: int,
 async def get_current_user(token: str = Depends(oauth2_bearer)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get('sub')
-        user_id: int = payload.get('id')
+        username: str = payload.get("sub")
+        user_id: int = payload.get("id")
         if username is None or user_id is None:
             raise get_user_exception()
-        return {"username": username, "id": id}
+        return {"username": username, "id": user_id}
     except JWTError:
         raise get_user_exception()
 
@@ -113,18 +113,18 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 
 #Exceptions
 def get_user_exception():
-    credenails_exception = HTTPException(
+    credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
-        headers={'WWW-Authenticate': 'Bearer'},
+        headers={"WWW-Authenticate": "Bearer"},
     )
-    return credenails_exception
+    return credentials_exception
 
 
 def token_exception():
     token_exception_response = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail='Incorrect username password',
-        headers={'WWW-Authenticate': 'Bearer'}
+        detail="Incorrect username password",
+        headers={"WWW-Authenticate": "Bearer"}
     )
     return token_exception_response
