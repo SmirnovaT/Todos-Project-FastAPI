@@ -1,13 +1,13 @@
 from fastapi import FastAPI
 import models
 from database import engine
+from routers import auth, todos
 
-import routers.auth as api
-import routers.todos as api
 
 app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
 
-app.include_router(api.auth_router)
-app.include_router(api.todos_router)
+
+app.include_router(auth.auth_router)
+app.include_router(todos.todos_router)
