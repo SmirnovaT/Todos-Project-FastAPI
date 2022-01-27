@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+import sys
+sys.path.append("..")
+from fastapi import Depends, HTTPException, status, APIRouter
 from pydantic import BaseModel
 from typing import Optional
 import models
@@ -9,10 +11,16 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 
+
 SECRET_KEY = 'kJjsfd45345hdfgdgkjkjl234jkkk'
 ALGORITHM = 'HS256'
 
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl='token')
+
+auth_router = APIRouter(
+    prefix='/api/auth',
+    tags=['authentication']
+)
 
 
 class CreateUser(BaseModel):
@@ -26,8 +34,6 @@ class CreateUser(BaseModel):
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 models.Base.metadata.create_all(bind=engine)
-
-app = FastAPI()
 
 
 def get_db():
@@ -81,7 +87,7 @@ async def get_current_user(token: str = Depends(oauth2_bearer)):
         raise get_user_exception()
 
 
-@app.post('/create/user')
+@auth_router.post("/create/user")
 async def create_new_user(create_user: CreateUser, db: Session = Depends(get_db)):
     create_user_model = models.Users()
     create_user_model.email = create_user.email
@@ -98,7 +104,7 @@ async def create_new_user(create_user: CreateUser, db: Session = Depends(get_db)
     db.commit()
 
 
-@app.post('/token')
+@auth_router.post('/token')
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),
                                  db: Session = Depends(get_db)):
     user = authenticate_user(form_data.username, form_data.password, db)
