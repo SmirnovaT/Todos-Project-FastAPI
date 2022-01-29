@@ -19,7 +19,8 @@ oauth2_bearer = OAuth2PasswordBearer(tokenUrl='token')
 
 auth_router = APIRouter(
     prefix='/api/auth',
-    tags=['authentication']
+    tags=['authentication'],
+    responses={401: {"user": "Not authorized"}}
 )
 
 
